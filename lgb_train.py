@@ -82,13 +82,13 @@ def train(args, logger):
     test_base_dir = './inputs/test/'
     test_features_df = load_features(
         features_df.columns, test_base_dir, logger)
-    trn_tst_df = pd.concat([features_df, test_features_df], axis=0)
     if configs['categorical_features']:
+        trn_tst_df = pd.concat([features_df, test_features_df], axis=0)
         sel_log('label encoding ...', None)
         trn_tst_df, le_dict = label_encoding(trn_tst_df,
                                              fit_columns=configs['categorical_features'])
-    features_df = trn_tst_df.iloc[:features_df.shape[0]]
-    test_features_df = trn_tst_df.iloc[features_df.shape[0]:]
+        features_df = trn_tst_df.iloc[:features_df.shape[0]]
+        test_features_df = trn_tst_df.iloc[features_df.shape[0]:]
     # feature selection if needed
     if configs['train']['feature_selection']:
         features_df = select_features(features_df,
