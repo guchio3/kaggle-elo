@@ -138,16 +138,35 @@ def train(args, logger):
     # PARAMS['categorical_feature'] = categorical_features
 
     sel_log('start training ...', None)
-    hist, cv_model = mlgb.cv(
-        params=PARAMS,
-        num_boost_round=10000,
-        folds=folds,
-        train_set=train_set,
-        verbose_eval=100,
-        early_stopping_rounds=200,
-        metrics='rmse',
-        callbacks=[log_evaluation(logger, period=100)],
-    )
+    cv_model = []
+    for i, idxes in tqdm(list(enumerate(folds))):
+        trn_idx, val_idx = idxes
+        train_set = lightgbm.Dataset(features_df.iloc[trn_idx],
+                                     target[trn_idx],
+                                     categorical_feature=categorical_features)
+        valid_set = lightgbm.Dataset(features_df.iloc[val_idx],
+                                     target[val_idx],
+                                     categorical_feature=categorical_features)
+        booster = lightgbm.train(
+            params=PARAMS.copy(),
+            train_set=train_set,
+            num_boost_round=20000,
+            valid_sets=[valid_set, train_set],
+            verbose_eval=100,
+            early_stopping_rounds=100,
+            callbacks=[log_evaluation(logger, period=100)],
+        )
+        cv_model.append(booster)
+#    hist, cv_model = mlgb.cv(
+#        params=PARAMS,
+#        num_boost_round=10000,
+#        folds=folds,
+#        train_set=train_set,
+#        verbose_eval=100,
+#        early_stopping_rounds=200,
+#        metrics='rmse',
+#        callbacks=[log_evaluation(logger, period=100)],
+#    )
 
     # -- Prediction
     if configs['train']['single_model']:
@@ -179,13 +198,16 @@ def train(args, logger):
         y_trues = []
         val_idxes = []
         scores = []
+        outlier_scores = []
         fold_importance_dict = {}
         for i, idxes in tqdm(list(enumerate(pred_folds))):
             trn_idx, val_idx = idxes
-            booster = cv_model.boosters[i]
+            # booster = cv_model.boosters[i]
+            booster = cv_model[i]
 
             # Get and store oof and y_true
-            y_pred = booster.predict(features_df.values[val_idx])
+            y_pred = booster.predict(features_df.values[val_idx],
+                                     num_iteration=None)
             y_true = target.values[val_idx]
             oofs.append(y_pred)
             y_trues.append(y_true)
@@ -194,6 +216,10 @@ def train(args, logger):
             # Calc RMSE
             rmse = np.sqrt(mean_squared_error(y_true, y_pred))
             scores.append(rmse)
+            fold_outlires = y_true < -30
+            out_rmse = np.sqrt(mean_squared_error(
+                y_true[fold_outlires], y_pred[fold_outlires]))
+            outlier_scores.append(out_rmse)
 
             # Save importance info
             fold_importance_df = pd.DataFrame()
@@ -202,8 +228,13 @@ def train(args, logger):
             fold_importance_dict[i] = fold_importance_df
 
         rmse_mean, rmse_std = np.mean(scores), np.std(scores)
+        out_rmse_mean, out_rmse_std = np.mean(
+            outlier_scores), np.std(outlier_scores)
         sel_log(
             f'RMSE_mean: {rmse_mean}, RMSE_std: {rmse_std}',
+            logger)
+        sel_log(
+            f'OUT_RMSE_mean: {out_rmse_mean}, OUT_RMSE_std: {out_rmse_std}',
             logger)
 
     # -- Post processings
@@ -217,7 +248,7 @@ def train(args, logger):
     # save_importance(configs['features'], fold_importance_dict,
     save_importance(features, fold_importance_dict,
                     './importances/' + filename_base + '_importances',
-                    topk=100)
+                    topk=100, main_metric='split')
 
     # Save trained models
     with open(
@@ -244,8 +275,9 @@ def train(args, logger):
         # -- Prediction
         sel_log('predicting for test ...', None)
         preds = []
-        for booster in tqdm(cv_model.boosters):
-            pred = booster.predict(test_features_df.values)
+        # for booster in tqdm(cv_model.boosters):
+        for booster in tqdm(cv_model):
+            pred = booster.predict(test_features_df.values, num_iteration=None)
             preds.append(pred)
         target_values = np.mean(preds, axis=0)
 

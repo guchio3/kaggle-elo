@@ -23,13 +23,12 @@ lgbm_params:
     metric: rmse
     learning_rate: 0.01
     num_leaves: 51
-    max_depth: 4
+    max_depth: -1
     subsample: 0.8
     bagging_freq: 1
     colsample_bytree: 0.8
     feature_fraction: 0.8
-    min_data_in_leaf: 30
-    min_child_samples: 30
+    min_data_in_leaf: 10
     lambda_l1: 0.1
     #    min_split_gain: 
     #    min_child_weight: 
@@ -145,5 +144,3 @@ invalid_features:
     - e004_new_merc_trans_basic_categorical_category_3_get_1st_value
     - e004_new_merc_trans_basic_categorical_category_3_get_2nd_value
     - e004_new_merc_trans_basic_categorical_category_3_get_last_value
-
-
