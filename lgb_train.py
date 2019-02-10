@@ -125,8 +125,8 @@ def train(args, logger):
     folds, pred_folds = tee(folds)
 
     # -- Make training dataset
-    train_set = mlgb.Dataset(features_df, target,
-                             categorical_feature=categorical_features)
+#    train_set = mlgb.Dataset(features_df, target,
+#                             categorical_feature=categorical_features)
 #    train_set = mlgb.Dataset(features_df.values, target.values,)
 #                             feature_name=features,
 #                             categorical_feature=configs['categorical_features'])
@@ -142,18 +142,19 @@ def train(args, logger):
     for i, idxes in tqdm(list(enumerate(folds))):
         trn_idx, val_idx = idxes
         train_set = lightgbm.Dataset(features_df.iloc[trn_idx],
-                                     target[trn_idx],
-                                     categorical_feature=categorical_features)
+                                     target[trn_idx],)
+#                                     categorical_feature=categorical_features)
         valid_set = lightgbm.Dataset(features_df.iloc[val_idx],
-                                     target[val_idx],
-                                     categorical_feature=categorical_features)
+                                     target[val_idx],)
+#                                     categorical_feature=categorical_features)
         booster = lightgbm.train(
             params=PARAMS.copy(),
             train_set=train_set,
             num_boost_round=20000,
             valid_sets=[valid_set, train_set],
             verbose_eval=100,
-            early_stopping_rounds=100,
+            early_stopping_rounds=200,
+            categorical_feature=categorical_features,
             callbacks=[log_evaluation(logger, period=100)],
         )
         cv_model.append(booster)

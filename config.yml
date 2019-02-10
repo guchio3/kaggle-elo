@@ -27,7 +27,6 @@ lgbm_params:
     subsample: 0.8
     bagging_freq: 1
     colsample_bytree: 0.8
-    feature_fraction: 0.8
     min_data_in_leaf: 10
     lambda_l1: 0.1
     #    min_split_gain: 
@@ -40,67 +39,6 @@ features:
     - e001_base_max
 
 categorical_features:
-#    - feature_1
-#    - feature_2
-#    - feature_3
-#    - e002_hist_trans_basic_categorical_merchant_category_id_get_0th_value
-#    - e002_hist_trans_basic_categorical_merchant_category_id_get_1st_value
-#    - e002_hist_trans_basic_categorical_merchant_category_id_get_2nd_value
-#    - e002_hist_trans_basic_categorical_merchant_category_id_get_last_value
-#    - e002_hist_trans_basic_categorical_state_id_get_0th_value
-#    - e002_hist_trans_basic_categorical_state_id_get_1st_value
-#    - e002_hist_trans_basic_categorical_state_id_get_2nd_value
-#    - e002_hist_trans_basic_categorical_state_id_get_last_value
-#    - e002_hist_trans_basic_categorical_city_id_get_0th_value
-#    - e002_hist_trans_basic_categorical_city_id_get_1st_value
-#    - e002_hist_trans_basic_categorical_city_id_get_2nd_value
-#    - e002_hist_trans_basic_categorical_city_id_get_last_value
-#    - e002_hist_trans_basic_categorical_category_2_get_0th_value
-#    - e002_hist_trans_basic_categorical_category_2_get_1st_value
-#    - e002_hist_trans_basic_categorical_category_2_get_2nd_value
-#    - e002_hist_trans_basic_categorical_category_2_get_last_value
-#    - e002_hist_trans_basic_categorical_category_3_get_0th_value
-#    - e002_hist_trans_basic_categorical_category_3_get_1st_value
-#    - e002_hist_trans_basic_categorical_category_3_get_2nd_value
-#    - e002_hist_trans_basic_categorical_category_3_get_last_value
-#    - e004_new_merc_trans_basic_categorical_merchant_category_id_get_0th_value
-#    - e004_new_merc_trans_basic_categorical_merchant_category_id_get_1st_value
-#    - e004_new_merc_trans_basic_categorical_merchant_category_id_get_2nd_value
-#    - e004_new_merc_trans_basic_categorical_merchant_category_id_get_last_value
-#    - e004_new_merc_trans_basic_categorical_state_id_get_0th_value
-#    - e004_new_merc_trans_basic_categorical_state_id_get_1st_value
-#    - e004_new_merc_trans_basic_categorical_state_id_get_2nd_value
-#    - e004_new_merc_trans_basic_categorical_state_id_get_last_value
-#    - e004_new_merc_trans_basic_categorical_city_id_get_0th_value
-#    - e004_new_merc_trans_basic_categorical_city_id_get_1st_value
-#    - e004_new_merc_trans_basic_categorical_city_id_get_2nd_value
-#    - e004_new_merc_trans_basic_categorical_city_id_get_last_value
-#    - e004_new_merc_trans_basic_categorical_category_2_get_0th_value
-#    - e004_new_merc_trans_basic_categorical_category_2_get_1st_value
-#    - e004_new_merc_trans_basic_categorical_category_2_get_2nd_value
-#    - e004_new_merc_trans_basic_categorical_category_2_get_0th_value
-#    - e004_new_merc_trans_basic_categorical_category_3_get_0th_value
-#    - e004_new_merc_trans_basic_categorical_category_3_get_1st_value
-#    - e004_new_merc_trans_basic_categorical_category_3_get_2nd_value
-#    - e004_new_merc_trans_basic_categorical_category_3_get_last_value
-
-invalid_features:
-    - card_id
-    - target
-    - first_active_month
-    - outliers
-    - e001_hist_trans_basic_numerical_purchase_date_first
-    - e001_hist_trans_basic_numerical_purchase_date_last
-    - e002_hist_trans_basic_categorical_merchant_id_get_0th_value
-    - e002_hist_trans_basic_categorical_merchant_id_get_1st_value
-    - e002_hist_trans_basic_categorical_merchant_id_get_2nd_value
-    - e002_hist_trans_basic_categorical_merchant_id_get_last_value
-    - e003_new_merc_trans_basic_numerical_purchase_date_first
-    - e003_new_merc_trans_basic_numerical_purchase_date_last
-    - e004_new_merc_trans_basic_categorical_merchant_id_get_0th_value
-    - e004_new_merc_trans_basic_categorical_merchant_id_get_1st_value
-    - e004_new_merc_trans_basic_categorical_merchant_id_get_2nd_value
-    - e004_new_merc_trans_basic_categorical_merchant_id_get_last_value
     - feature_1
     - feature_2
     - feature_3
@@ -144,3 +82,64 @@ invalid_features:
     - e004_new_merc_trans_basic_categorical_category_3_get_1st_value
     - e004_new_merc_trans_basic_categorical_category_3_get_2nd_value
     - e004_new_merc_trans_basic_categorical_category_3_get_last_value
+
+invalid_features:
+    - card_id
+    - target
+    - first_active_month
+    - outliers
+    - e001_hist_trans_basic_numerical_purchase_date_first
+    - e001_hist_trans_basic_numerical_purchase_date_last
+    - e002_hist_trans_basic_categorical_merchant_id_get_0th_value
+    - e002_hist_trans_basic_categorical_merchant_id_get_1st_value
+    - e002_hist_trans_basic_categorical_merchant_id_get_2nd_value
+    - e002_hist_trans_basic_categorical_merchant_id_get_last_value
+    - e003_new_merc_trans_basic_numerical_purchase_date_first
+    - e003_new_merc_trans_basic_numerical_purchase_date_last
+    - e004_new_merc_trans_basic_categorical_merchant_id_get_0th_value
+    - e004_new_merc_trans_basic_categorical_merchant_id_get_1st_value
+    - e004_new_merc_trans_basic_categorical_merchant_id_get_2nd_value
+    - e004_new_merc_trans_basic_categorical_merchant_id_get_last_value
+      #    - feature_1
+      #    - feature_2
+      #    - feature_3
+      #    - e002_hist_trans_basic_categorical_merchant_category_id_get_0th_value
+      #    - e002_hist_trans_basic_categorical_merchant_category_id_get_1st_value
+      #    - e002_hist_trans_basic_categorical_merchant_category_id_get_2nd_value
+      #    - e002_hist_trans_basic_categorical_merchant_category_id_get_last_value
+      #    - e002_hist_trans_basic_categorical_state_id_get_0th_value
+      #    - e002_hist_trans_basic_categorical_state_id_get_1st_value
+      #    - e002_hist_trans_basic_categorical_state_id_get_2nd_value
+      #    - e002_hist_trans_basic_categorical_state_id_get_last_value
+      #    - e002_hist_trans_basic_categorical_city_id_get_0th_value
+      #    - e002_hist_trans_basic_categorical_city_id_get_1st_value
+      #    - e002_hist_trans_basic_categorical_city_id_get_2nd_value
+      #    - e002_hist_trans_basic_categorical_city_id_get_last_value
+      #    - e002_hist_trans_basic_categorical_category_2_get_0th_value
+      #    - e002_hist_trans_basic_categorical_category_2_get_1st_value
+      #    - e002_hist_trans_basic_categorical_category_2_get_2nd_value
+      #    - e002_hist_trans_basic_categorical_category_2_get_last_value
+      #    - e002_hist_trans_basic_categorical_category_3_get_0th_value
+      #    - e002_hist_trans_basic_categorical_category_3_get_1st_value
+      #    - e002_hist_trans_basic_categorical_category_3_get_2nd_value
+      #    - e002_hist_trans_basic_categorical_category_3_get_last_value
+      #    - e004_new_merc_trans_basic_categorical_merchant_category_id_get_0th_value
+      #    - e004_new_merc_trans_basic_categorical_merchant_category_id_get_1st_value
+      #    - e004_new_merc_trans_basic_categorical_merchant_category_id_get_2nd_value
+      #    - e004_new_merc_trans_basic_categorical_merchant_category_id_get_last_value
+      #    - e004_new_merc_trans_basic_categorical_state_id_get_0th_value
+      #    - e004_new_merc_trans_basic_categorical_state_id_get_1st_value
+      #    - e004_new_merc_trans_basic_categorical_state_id_get_2nd_value
+      #    - e004_new_merc_trans_basic_categorical_state_id_get_last_value
+      #    - e004_new_merc_trans_basic_categorical_city_id_get_0th_value
+      #    - e004_new_merc_trans_basic_categorical_city_id_get_1st_value
+      #    - e004_new_merc_trans_basic_categorical_city_id_get_2nd_value
+      #    - e004_new_merc_trans_basic_categorical_city_id_get_last_value
+      #    - e004_new_merc_trans_basic_categorical_category_2_get_0th_value
+      #    - e004_new_merc_trans_basic_categorical_category_2_get_1st_value
+      #    - e004_new_merc_trans_basic_categorical_category_2_get_2nd_value
+      #    - e004_new_merc_trans_basic_categorical_category_2_get_0th_value
+      #    - e004_new_merc_trans_basic_categorical_category_3_get_0th_value
+      #    - e004_new_merc_trans_basic_categorical_category_3_get_1st_value
+      #    - e004_new_merc_trans_basic_categorical_category_3_get_2nd_value
+      #    - e004_new_merc_trans_basic_categorical_category_3_get_last_value
