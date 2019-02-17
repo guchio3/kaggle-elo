@@ -18,13 +18,13 @@ import tools.models.my_lightgbm as mlgb
 from tools.features.feature_tools import (get_all_features, load_features,
                                           select_features)
 from tools.utils.encoding import fill_unseens, label_encoding
+from tools.utils.foldings import UniformKFold
 from tools.utils.general_utils import (dec_timer, get_locs, load_configs,
                                        log_evaluation, logInit, parse_args,
                                        sel_log, send_line_notification,
                                        test_commit)
 from tools.utils.metrics import calc_best_MCC, calc_MCC, lgb_MCC
 from tools.utils.samplings import resampling
-from tools.utils.foldings import UniformKFold
 from tools.utils.visualizations import save_importance
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -118,13 +118,6 @@ def train(args, logger):
     # categorical_features = get_locs(
     #     features_df, configs['categorical_features'])
 
-    # -- Data resampling
-    # Stock original data for validation
-#    if configs['preprocess']['resampling']:
-#        target, id_measurement, features_df = resampling(
-#            target, id_measurement, features_df,
-#            configs['preprocess']['resampling_type'],
-#            configs['preprocess']['resampling_seed'], logger)
     sel_log(f'the shape features_df is {features_df.shape}', logger)
 
     # -- Split using group k-fold w/ shuffling
@@ -132,7 +125,7 @@ def train(args, logger):
     if configs['train']['fold_type'] == 'ukf':
         ukf = UniformKFold(configs['train']['fold_num'])
         folds = ukf.split(features_df, target)
-    elif configs['train']['fold_type'] == 'skf_out':
+    elif configs['train']['fold_type'] == 'skf':
         skf = StratifiedKFold(configs['train']['fold_num'], random_state=71)
         folds = skf.split(features_df, outliers)
     else:
@@ -156,6 +149,14 @@ def train(args, logger):
     cv_model = []
     for i, idxes in tqdm(list(enumerate(folds))):
         trn_idx, val_idx = idxes
+        # -- Data resampling
+        # Stock original data for validation
+        if configs['preprocess']['resampling']:
+            trn_idx = resampling(outliers[trn_idx],
+                                 configs['preprocess']['resampling_type'],
+                                 configs['preprocess']['resampling_seed'],
+                                 configs['preprocess']['os_lim'])
+
         train_set = lightgbm.Dataset(features_df.iloc[trn_idx],
                                      target[trn_idx],)
 #                                     categorical_feature=categorical_features)

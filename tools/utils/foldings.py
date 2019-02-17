@@ -3,7 +3,8 @@ import pandas as pd
 
 
 class UniformKFold():
-    def __init__(self, fold_num):
+    def __init__(self, fold_num, random_state=71):
+        np.random.seed(random_state)
         self.fold_num = fold_num
 
     def split(self, X, y):
@@ -12,7 +13,7 @@ class UniformKFold():
         for i in range(self.fold_num):
             train = indices[indice_templates != i]
             valid = indices[indice_templates == i]
-            yield train, valid
+            yield np.random.permutation(train), valid
 
 
 if __name__ == '__main__':

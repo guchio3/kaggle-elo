@@ -1,13 +1,15 @@
 # preprocess settings
 preprocess:
     resampling: False
-    resampling_type: under
+    resampling_type: over
     resampling_seed: 71
+    os_lim: 10000
 
 # training settings
 train:
+    mode: reg
     fold_num: 5
-    rm_outliers: True
+    rm_outliers: False
     fold_type: ukf
     single_model: False
     all_features: True
@@ -29,7 +31,7 @@ lgbm_params:
     subsample: 0.8
     bagging_freq: 1
     colsample_bytree: 0.8
-    min_data_in_leaf: 5
+    min_data_in_leaf: 30
     lambda_l1: 0.1
     min_data_per_group: 1
     cat_smooth: 1
