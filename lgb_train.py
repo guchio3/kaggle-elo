@@ -24,6 +24,7 @@ from tools.utils.general_utils import (dec_timer, get_locs, load_configs,
                                        test_commit)
 from tools.utils.metrics import calc_best_MCC, calc_MCC, lgb_MCC
 from tools.utils.samplings import resampling
+from tools.utils.foldings import UniformKFold
 from tools.utils.visualizations import save_importance
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -77,29 +78,40 @@ def train(args, logger):
                 './inputs/train/cached_featurse.pkl.gz', compression='gzip')
     # remove invalid features
     features_df.drop(configs['invalid_features'], axis=1, inplace=True)
+    # remove invalid rows
+    if configs['train']['rm_outliers']:
+        features_df = features_df[outliers == 0]
+        target = target[outliers == 0]
+    features_df
     # label encoding categorical features
     sel_log('loading test data ...', None)
     test_base_dir = './inputs/test/'
     test_features_df = load_features(
         features_df.columns, test_base_dir, logger)
-    if configs['categorical_features']:
-        trn_tst_df = pd.concat([features_df, test_features_df], axis=0)
-        sel_log('label encoding ...', None)
-        trn_tst_df, le_dict = label_encoding(trn_tst_df,
-                                             fit_columns=configs['categorical_features'])
-        features_df = trn_tst_df.iloc[:features_df.shape[0]]
-        test_features_df = trn_tst_df.iloc[features_df.shape[0]:]
     # feature selection if needed
     if configs['train']['feature_selection']:
         features_df = select_features(features_df,
                                       configs['train']['feature_select_path'],
-                                      'gain_mean',
+                                      configs['train']['metric'],
                                       configs['train']['feature_topk'])
+        test_features_df = select_features(test_features_df,
+                                           configs['train']['feature_select_path'],
+                                           configs['train']['metric'],
+                                           configs['train']['feature_topk'])
+
     features = features_df.columns
+    # clarify the used categorical features
+    # also encoding categorical features
     if configs['categorical_features']:
         categorical_features = sorted(
             list(set(features) &
                  set(configs['categorical_features'])))
+        trn_tst_df = pd.concat([features_df, test_features_df], axis=0)
+        sel_log('label encoding ...', None)
+        trn_tst_df, le_dict = label_encoding(trn_tst_df,
+                                             fit_columns=categorical_features)
+        features_df = trn_tst_df.iloc[:features_df.shape[0]]
+        test_features_df = trn_tst_df.iloc[features_df.shape[0]:]
     else:
         categorical_features = None
 
@@ -117,7 +129,10 @@ def train(args, logger):
 
     # -- Split using group k-fold w/ shuffling
     # NOTE: this is not stratified, I wanna implement it in the future
-    if configs['train']['fold_type'] == 'skf':
+    if configs['train']['fold_type'] == 'ukf':
+        ukf = UniformKFold(configs['train']['fold_num'])
+        folds = ukf.split(features_df, target)
+    elif configs['train']['fold_type'] == 'skf_out':
         skf = StratifiedKFold(configs['train']['fold_num'], random_state=71)
         folds = skf.split(features_df, outliers)
     else:
@@ -200,6 +215,7 @@ def train(args, logger):
         val_idxes = []
         scores = []
         outlier_scores = []
+        non_outlier_scores = []
         fold_importance_dict = {}
         for i, idxes in tqdm(list(enumerate(pred_folds))):
             trn_idx, val_idx = idxes
@@ -221,6 +237,10 @@ def train(args, logger):
             out_rmse = np.sqrt(mean_squared_error(
                 y_true[fold_outlires], y_pred[fold_outlires]))
             outlier_scores.append(out_rmse)
+            fold_non_outlires = y_true > -30
+            non_out_rmse = np.sqrt(mean_squared_error(
+                y_true[fold_non_outlires], y_pred[fold_non_outlires]))
+            non_outlier_scores.append(non_out_rmse)
 
             # Save importance info
             fold_importance_df = pd.DataFrame()
@@ -231,11 +251,16 @@ def train(args, logger):
         rmse_mean, rmse_std = np.mean(scores), np.std(scores)
         out_rmse_mean, out_rmse_std = np.mean(
             outlier_scores), np.std(outlier_scores)
+        non_out_rmse_mean, non_out_rmse_std = np.mean(
+            non_outlier_scores), np.std(non_outlier_scores)
         sel_log(
-            f'RMSE_mean: {rmse_mean}, RMSE_std: {rmse_std}',
+            f'RMSE_mean: {rmse_mean:.4f}, RMSE_std: {rmse_std:.4f}',
             logger)
         sel_log(
-            f'OUT_RMSE_mean: {out_rmse_mean}, OUT_RMSE_std: {out_rmse_std}',
+            f'OUT_RMSE_mean: {out_rmse_mean:.4f}, OUT_RMSE_std: {out_rmse_std:.4f}',
+            logger)
+        sel_log(
+            f'NON_OUT_RMSE_mean: {non_out_rmse_mean:.4f}, NON_OUT_RMSE_std: {non_out_rmse_std:.4f}',
             logger)
 
     # -- Post processings

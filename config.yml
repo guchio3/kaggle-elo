@@ -7,11 +7,13 @@ preprocess:
 # training settings
 train:
     fold_num: 5
-    fold_type: skf
+    rm_outliers: True
+    fold_type: ukf
     single_model: False
     all_features: True
     feature_selection: False
-    feature_select_path: './importances/e006_2019-01-26-14-05-44_3.688_importances.csv'
+    feature_select_path: 'importances/e005_2019-02-11-00-29-18_3.683_importances.csv'
+    metric: 'split_cov'
     feature_topk: 150
 
 # lightGBM parameters
@@ -22,13 +24,17 @@ lgbm_params:
     objective: regression
     metric: rmse
     learning_rate: 0.01
-    num_leaves: 51
+    num_leaves: 31
     max_depth: -1
     subsample: 0.8
     bagging_freq: 1
     colsample_bytree: 0.8
-    min_data_in_leaf: 10
+    min_data_in_leaf: 5
     lambda_l1: 0.1
+    min_data_per_group: 1
+    cat_smooth: 1
+    cat_l2: 0
+    max_cat_to_onehot: 10
     #    min_split_gain: 
     #    min_child_weight: 
     #    max_bin: 
@@ -50,6 +56,10 @@ categorical_features:
     - e002_hist_trans_basic_categorical_state_id_get_1st_value
     - e002_hist_trans_basic_categorical_state_id_get_2nd_value
     - e002_hist_trans_basic_categorical_state_id_get_last_value
+    - e002_hist_trans_basic_categorical_subsector_id_get_0th_value
+    - e002_hist_trans_basic_categorical_subsector_id_get_1st_value
+    - e002_hist_trans_basic_categorical_subsector_id_get_2nd_value
+    - e002_hist_trans_basic_categorical_subsector_id_get_last_value
     - e002_hist_trans_basic_categorical_city_id_get_0th_value
     - e002_hist_trans_basic_categorical_city_id_get_1st_value
     - e002_hist_trans_basic_categorical_city_id_get_2nd_value
@@ -70,6 +80,10 @@ categorical_features:
     - e004_new_merc_trans_basic_categorical_state_id_get_1st_value
     - e004_new_merc_trans_basic_categorical_state_id_get_2nd_value
     - e004_new_merc_trans_basic_categorical_state_id_get_last_value
+    - e004_new_merc_trans_basic_categorical_subsector_id_get_0th_value
+    - e004_new_merc_trans_basic_categorical_subsector_id_get_1st_value
+    - e004_new_merc_trans_basic_categorical_subsector_id_get_2nd_value
+    - e004_new_merc_trans_basic_categorical_subsector_id_get_last_value
     - e004_new_merc_trans_basic_categorical_city_id_get_0th_value
     - e004_new_merc_trans_basic_categorical_city_id_get_1st_value
     - e004_new_merc_trans_basic_categorical_city_id_get_2nd_value
@@ -111,6 +125,10 @@ invalid_features:
       #    - e002_hist_trans_basic_categorical_state_id_get_1st_value
       #    - e002_hist_trans_basic_categorical_state_id_get_2nd_value
       #    - e002_hist_trans_basic_categorical_state_id_get_last_value
+      #    - e002_hist_trans_basic_categorical_subsector_id_get_0th_value
+      #    - e002_hist_trans_basic_categorical_subsector_id_get_1st_value
+      #    - e002_hist_trans_basic_categorical_subsector_id_get_2nd_value
+      #    - e002_hist_trans_basic_categorical_subsector_id_get_last_value
       #    - e002_hist_trans_basic_categorical_city_id_get_0th_value
       #    - e002_hist_trans_basic_categorical_city_id_get_1st_value
       #    - e002_hist_trans_basic_categorical_city_id_get_2nd_value
@@ -131,6 +149,10 @@ invalid_features:
       #    - e004_new_merc_trans_basic_categorical_state_id_get_1st_value
       #    - e004_new_merc_trans_basic_categorical_state_id_get_2nd_value
       #    - e004_new_merc_trans_basic_categorical_state_id_get_last_value
+      #    - e004_new_merc_trans_basic_categorical_subsector_id_get_0th_value
+      #    - e004_new_merc_trans_basic_categorical_subsector_id_get_1st_value
+      #    - e004_new_merc_trans_basic_categorical_subsector_id_get_2nd_value
+      #    - e004_new_merc_trans_basic_categorical_subsector_id_get_last_value
       #    - e004_new_merc_trans_basic_categorical_city_id_get_0th_value
       #    - e004_new_merc_trans_basic_categorical_city_id_get_1st_value
       #    - e004_new_merc_trans_basic_categorical_city_id_get_2nd_value
