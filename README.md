@@ -1,5 +1,5 @@
 ## outline
-the dierectory for kaggle ...
+404th: https://www.kaggle.com/c/elo-merchant-category-recommendation
 
 
 ## directories
